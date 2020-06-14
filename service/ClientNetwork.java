@@ -2,6 +2,7 @@ package service;
 
 public class ClientNetwork {
 
+    private boolean connected;
     public ClientNetwork(CallBack callBack) {
         this.callBack = callBack;
     }
@@ -36,10 +37,10 @@ public class ClientNetwork {
     /**
      * 已/未连接
      * 
-     * @return 是否连接
+     * @return 是否连接,true为连接，false为未连接
      */
     public boolean isConnected() {
-
+        return this.connected;
     }
 
     public interface CallBack {
