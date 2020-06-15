@@ -4,7 +4,5 @@ package service;
  */
 public class ServiceSocket {
 
-    private ServiceSocket serviceSocket;
-
     
 }

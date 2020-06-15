@@ -5,10 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import javax.security.auth.callback.Callback;
-
-import infomation.userInfo;
-
 /**
  * 客户端网络类
  * 
@@ -129,6 +125,16 @@ public class ClientNetwork {
         return this.isConnected;
     }
 
+    /**
+     * 验证用户ID
+     * @param iDstr
+     * @return true:ID已存在
+     */
+    public boolean checkID(String iDstr) {
+        // TODO 服务器验证ID
+		return false;
+	}
+
     public interface CallBack {
 
         /**
@@ -165,4 +171,10 @@ public class ClientNetwork {
     }
 
     private CallBack callBack;
+
+    public void setCallBack(CallBack callBack){
+        this.callBack = callBack;
+    }
+
+	
 }
