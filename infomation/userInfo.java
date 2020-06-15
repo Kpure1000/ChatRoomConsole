@@ -2,6 +2,8 @@ package infomation;
 
 /**
  * userInfo
+ * @author Kpurek
+ * @version 1.0
  */
 public class userInfo extends infoBase {
 
@@ -9,7 +11,7 @@ public class userInfo extends infoBase {
 
     public String phoneNumber = "";
 
-    public userInfo(char[] id, String name) {
+    public userInfo(String id, String name) {
         super(id, name);
     }
 

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 /**
  * 群组信息类
+ * @author Kpurek
+ * @version 1.0
  */
 public class groupInfo extends infoBase {
 
@@ -12,7 +14,7 @@ public class groupInfo extends infoBase {
      * @param id 群组ID
      * @param name 群组名称 
      */
-    public groupInfo(char[] id, String name) {
+    public groupInfo(String id, String name) {
         super(id, name);
     }
 
