@@ -47,6 +47,9 @@ public class ClientNetwork {
         }
     }
 
+    /**
+     * 监听来自服务器的消息
+     */
     private void beginListening() {
         new Thread(() -> {
             try {
@@ -89,7 +92,7 @@ public class ClientNetwork {
     /**
      * 发消息
      * 
-     * @param name 用户名
+     * @param id 目标用户ID
      * @param msg  消息
      */
     public void sendMessage(String id, String msg) {
@@ -122,13 +125,14 @@ public class ClientNetwork {
 
     /**
      * 验证用户ID
+     * 
      * @param iDstr
      * @return true:ID已存在
      */
     public boolean checkID(String iDstr) {
         // TODO 服务器验证ID
-		return false;
-	}
+        return false;
+    }
 
     public interface CallBack {
 
@@ -167,9 +171,8 @@ public class ClientNetwork {
 
     private CallBack callBack;
 
-    public void setCallBack(CallBack callBack){
+    public void setCallBack(CallBack callBack) {
         this.callBack = callBack;
     }
 
-	
 }
