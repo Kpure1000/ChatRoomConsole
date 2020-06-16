@@ -48,24 +48,19 @@ public class ClientNetwork {
     }
 
     private void beginListening() {
-        Runnable listenRunnable = new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    inputStream = new DataInputStream(socket.getInputStream());
-                    while (true) {
-                        var inputStr = inputStream.readUTF().split("#");
-                        if (callBack != null) {
-                            callBack.onMessageReceived(inputStr[0], inputStr[1]);
-                        }
+        new Thread(() -> {
+            try {
+                inputStream = new DataInputStream(socket.getInputStream());
+                while (true) {
+                    var inputStr = inputStream.readUTF().split("#");
+                    if (callBack != null) {
+                        callBack.onMessageReceived(inputStr[0], inputStr[1]);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        };
-        (new Thread(listenRunnable)).start();
+        }).start();
     }
 
     /**
