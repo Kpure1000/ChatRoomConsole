@@ -18,12 +18,17 @@ public class clientView {
 
     ClientNetwork clientNetwork;
 
-    final String hostString = "127.0.0.0";
+    final String hostString = "127.0.0.1";
 
     final int portNum = 12834;
 
     public static void main(String[] args) {
-        new clientView();
+        var view = new clientView();
+        try {
+            view.clientRun();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -83,7 +88,31 @@ public class clientView {
 
         // }
 
-        System.out.println("尝试登录: " + hostString + ":" + portNum);
+        // System.out.println("尝试登录: " + hostString + ":" + portNum);
         clientNetwork.connect(hostString, portNum);
+    }
+
+    public void clientRun() throws IOException {
+        try {
+            while (clientNetwork != null && clientNetwork.isConnected()) {
+                System.out.print("请输入需要执行的操作:\n1.send\n2.quit");
+                int operation = sc.nextInt();
+                switch (operation) {
+                    case 1:
+                        System.out.println("输入消息:");
+                        clientNetwork.sendMessage("user", "msg: " + sc.nextLine());
+                        break;
+                    case 2:
+                        clientNetwork.disconnect();
+                        break;
+                    default:
+                        System.out.println("Error Input. Again.");
+                        break;
+                }
+                System.out.println();
+            }
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
     }
 }

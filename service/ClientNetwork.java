@@ -54,7 +54,7 @@ public class ClientNetwork {
         new Thread(() -> {
             try {
                 inputStream = new DataInputStream(socket.getInputStream());
-                while (true) {
+                while (inputStream!=null) {
                     var inputStr = inputStream.readUTF().split("#");
                     if (callBack != null) {
                         callBack.onMessageReceived(inputStr[0], inputStr[1]);
