@@ -1,7 +1,6 @@
 package infomation;
 
 import java.util.ArrayList;
-
 /**
  * 群组信息类
  * @author Kpurek

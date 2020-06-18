@@ -3,6 +3,8 @@ package view;
 import java.io.IOException;
 import java.util.Scanner;
 
+import infomation.UserMessage;
+import infomation.UserMessage.MessageType;
 import service.ClientNetwork;
 import service.ClientNetwork.CallBack;
 
@@ -14,7 +16,7 @@ import service.ClientNetwork.CallBack;
  */
 public class clientView {
 
-    Scanner sc = new Scanner(System.in);
+    Scanner sc = new Scanner(System.in, "UTF-8");
 
     ClientNetwork clientNetwork;
 
@@ -23,10 +25,11 @@ public class clientView {
     final int portNum = 12834;
 
     public static void main(String[] args) {
-        var view = new clientView();
         try {
+            var view = new clientView();
             view.clientRun();
         } catch (IOException e) {
+            System.out.println("退出主程序");
             e.printStackTrace();
         }
     }
@@ -58,49 +61,68 @@ public class clientView {
             }
 
             @Override
-            public void onMessageSent(String id, String msg) {
-                System.out.print("------>" + msg);
+            public void onMessageSent(String id, UserMessage msg) {
+                System.out.print("发送消息---->" + msg.getType().toString() + ": " + msg.getMessage());
             }
 
             @Override
-            public void onMessageReceived(String id, String msg) {
-                System.out.print(id + ": \n" + msg + "\n");
+            public void onMessageReceived(String id, UserMessage msg) {
+                System.out.print("接收消息<----" + msg.getType().toString() + ": " + msg.getMessage() + "\n");
 
             }
 
         });
+
         try {
+            initCilentView();
             initLoginView();
         } catch (IOException e) {
             e.printStackTrace();
+            // 由于服务器错误
+            System.out.println("退出程序");
+            return;
         }
+    }
+
+    /**
+     * 初始化界面
+     */
+    private void initCilentView() throws IOException {
+        System.out.println("****欢迎来到QuickChat!****");
+        System.out.println("服务器信息: " + hostString + ":" + portNum);
+        System.out.println("尝试连接服务器...");
+        try {
+            clientNetwork.connect(hostString, portNum);
+        } catch (IOException e) {
+            System.out.println("退出程序");
+            e.printStackTrace();
+        }
+
     }
 
     /**
      * 初始化登录界面
      */
     private void initLoginView() throws IOException {
-        // System.out.print("***登录**:\n");
-        // System.out.print("*账号: ");
-        // String IDstr = sc.nextLine();
-        // // 验证用户ID是否存在
-        // if (clientNetwork.checkID(IDstr) == true) {
-
-        // }
-
-        // System.out.println("尝试登录: " + hostString + ":" + portNum);
-        clientNetwork.connect(hostString, portNum);
     }
 
     public void clientRun() throws IOException {
         try {
             while (clientNetwork != null && clientNetwork.isConnected()) {
-                System.out.print("请输入需要执行的操作:\n1.send\n2.quit");
-                int operation = sc.nextInt();
+                System.out.println("请输入需要执行的操作:\n1.send\n2.quit");
+                int operation = 0;
+                if (sc.hasNext())
+                    operation = sc.nextInt();
+                    sc.nextLine();
                 switch (operation) {
                     case 1:
                         System.out.println("输入消息:");
-                        clientNetwork.sendMessage("user", "msg: " + sc.nextLine());
+                        String msgStr="";
+                        if(sc.hasNextLine()){
+                            msgStr = sc.nextLine();
+                        }
+                        UserMessage msg = new UserMessage(MessageType.MSG_PRIVATE, msgStr);
+                        clientNetwork.sendMessage("user", msg);
                         break;
                     case 2:
                         clientNetwork.disconnect();
@@ -112,7 +134,7 @@ public class clientView {
                 System.out.println();
             }
         } catch (Exception e) {
-            // TODO: handle exception
+            e.printStackTrace();
         }
     }
-} 
+}

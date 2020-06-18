@@ -1,9 +1,10 @@
 package service;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+
+import infomation.UserMessage;
 
 /**
  * 客户端网络类
@@ -17,12 +18,10 @@ public class ClientNetwork {
 
     // 套接字
     private Socket socket;
-    // 输入
-    private DataInputStream inputStream;
-    // 输出
-    private DataOutputStream outputStream;
     // 连接标志
-    private boolean isConnected;
+    private boolean isConnected = false;
+
+    ObjectOutputStream objOut;
 
     /**
      * 连接服务器
@@ -30,7 +29,7 @@ public class ClientNetwork {
      * @param host 主机号
      * @param port 端口
      */
-    public void connect(String host, int port) {
+    public void connect(String host, int port) throws IOException {
         try {
             socket = new Socket(host, port);
             isConnected = true;
@@ -53,13 +52,7 @@ public class ClientNetwork {
     private void beginListening() {
         new Thread(() -> {
             try {
-                inputStream = new DataInputStream(socket.getInputStream());
-                while (inputStream!=null) {
-                    var inputStr = inputStream.readUTF().split("#");
-                    if (callBack != null) {
-                        callBack.onMessageReceived(inputStr[0], inputStr[1]);
-                    }
-                }
+                socket.getOutputStream();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -74,12 +67,6 @@ public class ClientNetwork {
             if (socket != null) {
                 socket.close();
             }
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (outputStream != null) {
-                outputStream.close();
-            }
             isConnected = false;
             if (callBack != null) {
                 callBack.onDisconnected();
@@ -92,19 +79,20 @@ public class ClientNetwork {
     /**
      * 发消息
      * 
-     * @param id 目标用户ID
-     * @param msg  消息
+     * @param id  目标用户ID
+     * @param msg 消息
      */
-    public void sendMessage(String id, String msg) {
+    public void sendMessage(String id, UserMessage msg) {
         try {
             if (msg == null || "".equals(msg) || socket == null) {
+                System.out.println("消息传入错误");
                 return;
             }
-            if (outputStream != null) {
-                String outputStr = id + msg;
-                outputStream = new DataOutputStream(socket.getOutputStream());
-                outputStream.writeUTF(outputStr);
-                outputStream.flush();
+            if (objOut == null)
+                objOut = new ObjectOutputStream(socket.getOutputStream());
+            if (objOut != null) {
+                objOut.writeObject(msg);
+                objOut.flush();
                 if (callBack != null) {
                     callBack.onMessageSent(id, msg);
                 }
@@ -160,13 +148,13 @@ public class ClientNetwork {
         /**
          * 当发送消息时
          */
-        void onMessageSent(String id, String msg);
+        void onMessageSent(String id, UserMessage msg);
 
         /**
          * @param id  消息源ID
          * @param msg 消息内容
          */
-        void onMessageReceived(String id, String msg);
+        void onMessageReceived(String id, UserMessage msg);
     }
 
     private CallBack callBack;
