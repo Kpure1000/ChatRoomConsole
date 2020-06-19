@@ -3,8 +3,8 @@ package view;
 import java.io.IOException;
 import java.util.Scanner;
 
-import infomation.UserMessage;
-import infomation.UserMessage.MessageType;
+import message.UserMessage;
+import message.UserMessageWriter;
 import service.ClientNetwork;
 import service.ClientNetwork.CallBack;
 
@@ -16,14 +16,38 @@ import service.ClientNetwork.CallBack;
  */
 public class clientView {
 
-    Scanner sc = new Scanner(System.in, "UTF-8");
+    /**
+     * 选择扫描器
+     */
+    Scanner selectSc = new Scanner(System.in, "UTF-8");
 
+    /**
+     * 输入扫描器
+     */
+    Scanner inputSc = new Scanner(System.in, "UTF-8");
+
+    /**
+     * 网络层
+     * <p>
+     * 可能还需要加一层权限层
+     */
     ClientNetwork clientNetwork;
 
+    /**
+     * 主机号 本地
+     */
     final String hostString = "127.0.0.1";
 
+    /**
+     * 本地监听端口
+     */
     final int portNum = 12834;
 
+    /**
+     * 入口
+     * 
+     * @param args
+     */
     public static void main(String[] args) {
         try {
             var view = new clientView();
@@ -61,13 +85,13 @@ public class clientView {
             }
 
             @Override
-            public void onMessageSent(String id, UserMessage msg) {
-                System.out.print("发送消息---->" + msg.getType().toString() + ": " + msg.getMessage());
+            public void onMessageSent(UserMessage msg) {
+                System.out.println("发送消息---->" + msg.getContent());
             }
 
             @Override
-            public void onMessageReceived(String id, UserMessage msg) {
-                System.out.print("接收消息<----" + msg.getType().toString() + ": " + msg.getMessage() + "\n");
+            public void onMessageReceived(UserMessage msg) {
+                System.out.println("接收消息<----" + msg.getContent());
 
             }
 
@@ -106,25 +130,36 @@ public class clientView {
     private void initLoginView() throws IOException {
     }
 
+    /**
+     * 客户端控制
+     * <p>
+     * 这是向控制台的妥协
+     * 
+     * @throws IOException
+     */
     public void clientRun() throws IOException {
         try {
             while (clientNetwork != null && clientNetwork.isConnected()) {
                 System.out.println("请输入需要执行的操作:\n1.send\n2.quit");
+                // 选项
                 int operation = 0;
-                if (sc.hasNext())
-                    operation = sc.nextInt();
-                    sc.nextLine();
+                if (selectSc.hasNext()) {
+                    operation = selectSc.nextInt();
+                }
+                selectSc.nextLine();
                 switch (operation) {
-                    case 1:
+                    case 1: // 消息输入
                         System.out.println("输入消息:");
-                        String msgStr="";
-                        if(sc.hasNextLine()){
-                            msgStr = sc.nextLine();
+                        String msgStr = "";
+                        if (selectSc.hasNextLine()) {
+                            msgStr = selectSc.nextLine();
                         }
-                        UserMessage msg = new UserMessage(MessageType.MSG_PRIVATE, msgStr);
-                        clientNetwork.sendMessage("user", msg);
+                        var msg =new UserMessageWriter();
+                        clientNetwork.sendMessage(msg.testMessage(msgStr));
                         break;
-                    case 2:
+                    case 2: // 下线
+                        // TODO 这里需要加入下线操作
+                        //目前只是断开连接，但这并不是下线
                         clientNetwork.disconnect();
                         break;
                     default:
