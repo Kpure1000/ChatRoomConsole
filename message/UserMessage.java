@@ -1,10 +1,11 @@
-package infomation;
+package message;
 
 import java.io.Serializable;
 
+import infomation.*;
+
 public class UserMessage implements Serializable {
 
-   
     /**
      *
      */
@@ -42,31 +43,44 @@ public class UserMessage implements Serializable {
         /**
          * 群聊消息
          */
-        MSG_GROUP
+        MSG_GROUP, 
+        
+        /**
+         * 测试消息
+         */
+        MSG_TEST
     }
 
-    private MessageType messageType;
+    /**
+     * 消息类型
+     */
+    protected MessageType messageType;
 
-    private String message;
+    /**
+     * 消息字符串内容
+     */
+    protected String message;
 
-    public UserMessage(MessageType messageType, String msg) {
-        this.messageType = messageType;
-        this.message = msg;
+    /**
+     * 发送者信息
+     */
+    protected infoBase writerInfo;
+
+    /**
+     * 接收者信息
+     */
+    protected infoBase targetInfo;
+
+    /**
+     * 构造
+     */
+    public UserMessage() {
+        this.messageType = null;
+        this.message = "";
+    }
+    
+    public String getContent() {
+        return messageType.toString() + ": " + message;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public MessageType getType() {
-        return messageType;
-    }
-
-    public void setType(MessageType messageType) {
-        this.messageType = messageType;
-    }
 }
