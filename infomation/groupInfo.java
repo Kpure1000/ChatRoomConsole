@@ -6,14 +6,14 @@ import java.util.ArrayList;
  * @author Kpurek
  * @version 1.0
  */
-public class groupInfo extends infoBase {
+public class GroupInfo extends infoBase {
 
     /**
      * 构造
      * @param id 群组ID
      * @param name 群组名称 
      */
-    public groupInfo(String id, String name) {
+    public GroupInfo(String id, String name) {
         super(id, name);
     }
 
