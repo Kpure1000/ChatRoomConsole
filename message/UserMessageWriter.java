@@ -7,6 +7,9 @@ import message.UserMessage.MessageType;
  * 用户消息编辑器
  * <p>
  * 这是用户行为，用户仅拥有编辑权，没有解析权
+ * 
+ * @author Kpurek
+ * @version 1.0
  */
 public class UserMessageWriter {
 

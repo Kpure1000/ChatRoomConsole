@@ -29,7 +29,7 @@ public class clientView {
     /**
      * 网络层
      * <p>
-     * 可能还需要加一层权限层
+     * 可能还需要加行为层
      */
     ClientNetwork clientNetwork;
 

@@ -3,7 +3,9 @@ package message;
 import java.io.Serializable;
 
 import infomation.*;
-
+/**
+ * 用户信息类
+ */
 public class UserMessage implements Serializable {
 
     /**
@@ -36,6 +38,10 @@ public class UserMessage implements Serializable {
          * 设置密码
          */
         SET_PASS,
+        /**
+         * 新建账户
+         */
+        CREATE_COUNT,
         /**
          * 私聊消息
          */
