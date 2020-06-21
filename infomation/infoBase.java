@@ -1,11 +1,18 @@
 package infomation;
 
+import java.io.Serializable;
+
 /**
  * userinfo
  * @author Kpurek
  * @version 1.0
  */
-public class infoBase {
+public class InfoBase implements Serializable{
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 609116983101639345L;
 
     /**
      * ID (创建后只读)
@@ -17,7 +24,7 @@ public class infoBase {
      */
     String Name;
 
-    public infoBase(String id, String name) {
+    public InfoBase(String id, String name) {
         ID = id;
         Name = name;
     }

@@ -70,12 +70,12 @@ public class UserMessage implements Serializable {
     /**
      * 发送者信息
      */
-    protected infoBase writerInfo;
+    protected InfoBase writerInfo;
 
     /**
      * 接收者信息
      */
-    protected infoBase targetInfo;
+    protected InfoBase targetInfo;
 
     /**
      * 构造
