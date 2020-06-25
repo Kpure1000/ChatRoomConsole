@@ -42,13 +42,8 @@ public class clientView {
      * @param args
      */
     public static void main(String[] args) {
-        try {
-            var view = new clientView();
-            view.clientRun();
-        } catch (IOException e) {
-            System.out.println("退出主程序");
-            // e.printStackTrace();
-        }
+        var view = new clientView();
+        view.clientRun();
     }
 
     /**
@@ -89,32 +84,29 @@ public class clientView {
 
         });
 
-        try {
-            initCilentView();
-            initLoginView();
-        } catch (IOException e) {
-            // e.printStackTrace();
-            // 由于服务器错误
-            System.out.println("退出程序");
-            return;
-        }
+        // 网络异常在网络层解决
+        initCilentView();
+        initLoginView();
+
     }
 
     /**
      * 初始化界面
      */
-    private void initCilentView() throws IOException {
+    private void initCilentView() {
         System.out.println("****欢迎来到QuickChat!****");
         System.out.println("服务器信息: " + hostString + ":" + portNum);
         System.out.println("尝试连接服务器...");
         // 不断尝试连接服务器
         while (true) {
             try {
-                if (ClientNetwork.getInstance().connect(hostString, portNum))
+                if (ClientNetwork.getInstance().connect(hostString, portNum)) {
                     break;
-            } catch (IOException e) {
-                System.out.println("退出程序");
-                // e.printStackTrace();
+                }
+                // 间隔500ms重试连接
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
@@ -123,49 +115,45 @@ public class clientView {
     /**
      * 初始化登录界面
      */
-    private void initLoginView() throws IOException {
+    private void initLoginView() {
     }
 
     /**
      * 客户端控制
      * <p>
      * 这是向控制台的妥协
-     * 
-     * @throws IOException
      */
-    public void clientRun() throws IOException {
-        try {
-            while (ClientNetwork.getInstance() != null && ClientNetwork.getInstance().isConnected()) {
-                System.out.println("请输入需要执行的操作:\n1.send\n2.quit");
-                // 选项
-                int operation = 0;
-                if (selectSc.hasNext()) {
-                    operation = selectSc.nextInt();
-                }
-                selectSc.nextLine();
-                switch (operation) {
-                    case 1: // 消息输入
-                        System.out.println("输入消息:");
-                        String msgStr = "";
-                        if (selectSc.hasNextLine()) {
-                            msgStr = selectSc.nextLine();
-                        }
-                        var msg = new UserMessageWriter();
-                        ClientNetwork.getInstance().sendMessage(msg.testMessage(msgStr));
-                        break;
-                    case 2: // 下线
-                        // TODO 这里需要加入下线操作
-                        // 目前只是断开连接，但这并不是下线
-                        ClientNetwork.getInstance().disconnect();
-                        break;
-                    default:
-                        System.out.println("Error Input. Again.");
-                        break;
-                }
-                System.out.println();
+    public void clientRun() {
+
+        while (ClientNetwork.getInstance() != null && ClientNetwork.getInstance().isConnected()) {
+            System.out.println("请输入需要执行的操作:\n1.send\n2.quit");
+            // 选项
+            int operation = 0;
+            if (selectSc.hasNext()) {
+                operation = selectSc.nextInt();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            selectSc.nextLine();
+            switch (operation) {
+                case 1: // 消息输入
+                    System.out.println("输入消息:");
+                    String msgStr = "";
+                    if (selectSc.hasNextLine()) {
+                        msgStr = selectSc.nextLine();
+                    }
+                    var msg = new UserMessageWriter();
+                    ClientNetwork.getInstance().sendMessage(msg.testMessage(msgStr));
+                    break;
+                case 2: // 下线
+                    // TODO 这里需要加入下线操作
+                    // 目前只是断开连接，但这并不是下线
+                    ClientNetwork.getInstance().disconnect();
+                    break;
+                default:
+                    System.out.println("Error Input. Again.");
+                    break;
+            }
+            System.out.println();
         }
+
     }
 }
