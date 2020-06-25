@@ -8,6 +8,8 @@ import message.*;
 
 /**
  * 客户端网络类
+ * <p>
+ * 网络层,自己的异常自己解决
  * 
  * @author Kpurek
  * @version 1.0
@@ -21,8 +23,10 @@ public class ClientNetwork {
 
     private ClientNetwork() {
     }
+
     /**
      * 获取单例
+     * 
      * @return 实例
      */
     public static ClientNetwork getInstance() {
@@ -50,6 +54,9 @@ public class ClientNetwork {
      */
     ObjectOutputStream objOut;
 
+    private String curHost;
+    private int curPort;
+
     /**
      * 连接服务器
      * 
@@ -57,9 +64,13 @@ public class ClientNetwork {
      * @param port 端口
      * @return 返回是否连接成功
      */
-    public boolean connect(String host, int port) throws IOException {
+    public boolean connect(String host, int port) {
         try {
             socket = new Socket(host, port);
+            // 暂存目前可用服务器信息
+            curHost = host;
+            curPort = port;
+            // 标志连接
             isConnected = true;
             if (callBack != null) {
                 callBack.onConnectSuccess(host, port);
@@ -68,7 +79,7 @@ public class ClientNetwork {
             return true;
         } catch (IOException e) {
             isConnected = false;
-            if (callBack != null) {
+            if (callBack != null) { // 连接失败
                 callBack.onConnectFailed(host, port);
             }
             return false;
@@ -94,7 +105,6 @@ public class ClientNetwork {
     public void disconnect() {
         try {
             if (socket != null) {
-                sendMessage(new UserMessageWriter().requireOffLine(null));
                 socket.close();
             }
             isConnected = false;
@@ -117,7 +127,7 @@ public class ClientNetwork {
                 System.out.println("消息传入错误");
                 return;
             }
-            if (objOut == null)
+            if (objOut == null) // 加载对象输出流
                 objOut = new ObjectOutputStream(socket.getOutputStream());
             if (objOut != null) {
                 objOut.writeObject(msg);
@@ -127,7 +137,20 @@ public class ClientNetwork {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            // TODO 如果断开连接，broken pipe异常如何处理？
+            if (socket.isConnected()) {
+                while (isConnected == false) {
+                    System.out.println("连接断开，发送失败;正在尝试重新连接...");
+                    // TODO 这里其实
+                    connect(curHost, curPort);
+                    try {
+                        //等待400ms
+                        Thread.sleep(400);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
         }
     }
 
