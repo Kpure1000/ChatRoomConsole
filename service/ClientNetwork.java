@@ -14,6 +14,25 @@ import message.*;
  */
 public class ClientNetwork {
 
+    /**
+     * 单例
+     */
+    private static ClientNetwork instance;
+
+    private ClientNetwork() {
+    }
+    /**
+     * 获取单例
+     * @return 实例
+     */
+    public static ClientNetwork getInstance() {
+        if (instance == null) {
+            instance = new ClientNetwork();
+            return instance;
+        }
+        return instance;
+    }
+
     /*--------------------------------------------*/
 
     /**
@@ -36,8 +55,9 @@ public class ClientNetwork {
      * 
      * @param host 主机号
      * @param port 端口
+     * @return 返回是否连接成功
      */
-    public void connect(String host, int port) throws IOException {
+    public boolean connect(String host, int port) throws IOException {
         try {
             socket = new Socket(host, port);
             isConnected = true;
@@ -45,18 +65,18 @@ public class ClientNetwork {
                 callBack.onConnectSuccess(host, port);
             }
             beginListening();
+            return true;
         } catch (IOException e) {
             isConnected = false;
             if (callBack != null) {
                 callBack.onConnectFailed(host, port);
             }
-            e.printStackTrace();
+            return false;
         }
     }
 
     /**
      * 监听来自服务器的消息
-     * // TODO 这里还要考虑同步问题，应该在socket关闭前，结束线程（下线时关闭线程）
      */
     private void beginListening() {
         new Thread(() -> {
@@ -70,13 +90,10 @@ public class ClientNetwork {
 
     /**
      * 断开连接
-     * <p>
-     * // TODO 应该改为protect，要加一个行为层
      */
     public void disconnect() {
         try {
             if (socket != null) {
-                // TODO 这个地方只是目前这么写，disconnect之外还需要加一个行为层
                 sendMessage(new UserMessageWriter().requireOffLine(null));
                 socket.close();
             }
